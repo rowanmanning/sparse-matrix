@@ -18,8 +18,8 @@ describe('lib/sparse-matrix', () => {
 			sinon.spy(SparseMatrix, 'applyDefaultOptions');
 			options = {
 				defaultData: {isDefaultData: true},
-				height: 4,
-				width: 4
+				rowCount: 4,
+				colCount: 4
 			};
 			instance = new SparseMatrix(options);
 		});
@@ -508,7 +508,7 @@ describe('lib/sparse-matrix', () => {
 				});
 			});
 
-			describe('when `x` is greater than than the max value based on `options.width`', () => {
+			describe('when `x` is greater than than the max value based on `options.colCount`', () => {
 				it('returns `false`', () => {
 					assert.isFalse(instance.isValidX(4));
 				});
@@ -537,7 +537,7 @@ describe('lib/sparse-matrix', () => {
 				});
 			});
 
-			describe('when `y` is greater than than the max value based on `options.width`', () => {
+			describe('when `y` is greater than than the max value based on `options.colCount`', () => {
 				it('returns `false`', () => {
 					assert.isFalse(instance.isValidY(4));
 				});
@@ -702,15 +702,15 @@ describe('lib/sparse-matrix', () => {
 			});
 		});
 
-		describe('.height', () => {
+		describe('.rowCount', () => {
 			it('is set to `30`', () => {
-				assert.strictEqual(SparseMatrix.defaultOptions.height, 30);
+				assert.strictEqual(SparseMatrix.defaultOptions.rowCount, 30);
 			});
 		});
 
-		describe('.width', () => {
+		describe('.colCount', () => {
 			it('is set to `30`', () => {
-				assert.strictEqual(SparseMatrix.defaultOptions.width, 30);
+				assert.strictEqual(SparseMatrix.defaultOptions.colCount, 30);
 			});
 		});
 
