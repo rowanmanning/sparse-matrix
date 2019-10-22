@@ -15,7 +15,7 @@ describe('lib/sparse-matrix', () => {
 		let options;
 
 		beforeEach(() => {
-			sinon.spy(SparseMatrix, 'applyDefaultOptions');
+			sinon.spy(SparseMatrix, '_applyDefaultOptions');
 			options = {
 				defaultData: {isDefaultData: true},
 				rowCount: 4,
@@ -25,8 +25,8 @@ describe('lib/sparse-matrix', () => {
 		});
 
 		it('defaults the options', () => {
-			assert.calledOnce(SparseMatrix.applyDefaultOptions);
-			assert.calledWithExactly(SparseMatrix.applyDefaultOptions, options);
+			assert.calledOnce(SparseMatrix._applyDefaultOptions);
+			assert.calledWithExactly(SparseMatrix._applyDefaultOptions, options);
 		});
 
 		describe('.toJSON()', () => {
@@ -716,7 +716,7 @@ describe('lib/sparse-matrix', () => {
 
 	});
 
-	describe('SparseMatrix.applyDefaultOptions(options)', () => {
+	describe('SparseMatrix._applyDefaultOptions(options)', () => {
 		let options;
 		let returnValue;
 
@@ -724,7 +724,7 @@ describe('lib/sparse-matrix', () => {
 			sinon.spy(Object, 'assign');
 			SparseMatrix.defaultOptions = {isDefaultOptions: true};
 			options = {isOptions: true};
-			returnValue = SparseMatrix.applyDefaultOptions(options);
+			returnValue = SparseMatrix._applyDefaultOptions(options);
 		});
 
 		it('merges the passed in options with some defaults', () => {
