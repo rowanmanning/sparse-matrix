@@ -1,0 +1,39 @@
+{
+  "name": "@rowanmanning/sparse-matrix",
+  "version": "0.0.0",
+  "description": "Represent a matrix with as little stored data as possible",
+  "keywords": [
+    "grid",
+    "matrix",
+    "sparse"
+  ],
+  "author": "Rowan Manning (https://rowanmanning.com/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rowanmanning/sparse-matrix.git"
+  },
+  "homepage": "https://github.com/rowanmanning/sparse-matrix",
+  "bugs": "https://github.com/rowanmanning/sparse-matrix/issues",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10",
+    "npm": ">=6.9.0"
+  },
+  "dependencies": {
+    "rfdc": "^1.1.4"
+  },
+  "devDependencies": {
+    "@rowanmanning/eslint-config": "^2.1.0",
+    "@rowanmanning/make": "^1.2.0",
+    "eslint": "^6.5.1",
+    "mocha": "^6.2.1",
+    "mockery": "^2.1.0",
+    "nyc": "^14.1.1",
+    "proclaim": "^3.6.0",
+    "sinon": "^7.5.0"
+  },
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "make ci"
+  }
+}
