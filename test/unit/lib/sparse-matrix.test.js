@@ -19,7 +19,7 @@ describe('lib/sparse-matrix', () => {
 			options = {
 				defaultData: {isDefaultData: true},
 				rowCount: 4,
-				colCount: 4
+				columnCount: 4
 			};
 			instance = new SparseMatrix(options);
 		});
@@ -27,6 +27,30 @@ describe('lib/sparse-matrix', () => {
 		it('defaults the options', () => {
 			assert.calledOnce(SparseMatrix._applyDefaultOptions);
 			assert.calledWithExactly(SparseMatrix._applyDefaultOptions, options);
+		});
+
+		describe('.columnCount', () => {
+			it('is set to `options.columnCount`', () => {
+				assert.strictEqual(instance.columnCount, options.columnCount);
+			});
+		});
+
+		describe('.rowCount', () => {
+			it('is set to `options.rowCount`', () => {
+				assert.strictEqual(instance.rowCount, options.rowCount);
+			});
+		});
+
+		describe('.width', () => {
+			it('is set to `options.columnCount`', () => {
+				assert.strictEqual(instance.width, options.columnCount);
+			});
+		});
+
+		describe('.height', () => {
+			it('is set to `options.rowCount`', () => {
+				assert.strictEqual(instance.height, options.rowCount);
+			});
 		});
 
 		describe('.toJSON()', () => {
@@ -559,7 +583,7 @@ describe('lib/sparse-matrix', () => {
 				});
 			});
 
-			describe('when `x` is greater than than the max value based on `options.colCount`', () => {
+			describe('when `x` is greater than than the max value based on `options.columnCount`', () => {
 				it('returns `false`', () => {
 					assert.isFalse(instance.isValidX(4));
 				});
@@ -588,7 +612,7 @@ describe('lib/sparse-matrix', () => {
 				});
 			});
 
-			describe('when `y` is greater than than the max value based on `options.colCount`', () => {
+			describe('when `y` is greater than than the max value based on `options.columnCount`', () => {
 				it('returns `false`', () => {
 					assert.isFalse(instance.isValidY(4));
 				});
@@ -759,9 +783,9 @@ describe('lib/sparse-matrix', () => {
 			});
 		});
 
-		describe('.colCount', () => {
+		describe('.columnCount', () => {
 			it('is set to `30`', () => {
-				assert.strictEqual(SparseMatrix._defaultOptions.colCount, 30);
+				assert.strictEqual(SparseMatrix._defaultOptions.columnCount, 30);
 			});
 		});
 
