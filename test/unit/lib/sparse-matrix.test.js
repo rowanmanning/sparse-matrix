@@ -797,7 +797,12 @@ describe('lib/sparse-matrix', () => {
 
 		beforeEach(() => {
 			sinon.spy(Object, 'assign');
-			SparseMatrix._defaultOptions = {isDefaultOptions: true};
+			SparseMatrix._defaultOptions = {
+				isDefaultOptions: true,
+				defaultData: {isDefaultData: true},
+				columnCount: 123,
+				rowCount: 123
+			};
 			options = {isOptions: true};
 			returnValue = SparseMatrix._applyDefaultOptions(options);
 		});
@@ -813,6 +818,82 @@ describe('lib/sparse-matrix', () => {
 
 		it('returns the merged options', () => {
 			assert.strictEqual(returnValue, Object.assign.firstCall.returnValue);
+		});
+
+		describe('when `options.defaultData` is not a plain object', () => {
+
+			it('throws a TypeError', () => {
+				const expectedError = 'The defaultData option must be a plain object';
+
+				const callWithArray = () => SparseMatrix._applyDefaultOptions({defaultData: []});
+				assert.throws(callWithArray, TypeError);
+				assert.throws(callWithArray, expectedError);
+
+				const callWithString = () => SparseMatrix._applyDefaultOptions({defaultData: ''});
+				assert.throws(callWithString, TypeError);
+				assert.throws(callWithString, expectedError);
+
+				const callWithNull = () => SparseMatrix._applyDefaultOptions({defaultData: null});
+				assert.throws(callWithNull, TypeError);
+				assert.throws(callWithNull, expectedError);
+			});
+
+		});
+
+		describe('when `options.rowCount` is not a plain object', () => {
+
+			it('throws a TypeError', () => {
+				const expectedError = 'The rowCount option must be a positive integer';
+
+				const callWithNegative = () => SparseMatrix._applyDefaultOptions({rowCount: -1});
+				assert.throws(callWithNegative, TypeError);
+				assert.throws(callWithNegative, expectedError);
+
+				const callWithZero = () => SparseMatrix._applyDefaultOptions({rowCount: 0});
+				assert.throws(callWithZero, TypeError);
+				assert.throws(callWithZero, expectedError);
+
+				const callWithFloat = () => SparseMatrix._applyDefaultOptions({rowCount: 13.7});
+				assert.throws(callWithFloat, TypeError);
+				assert.throws(callWithFloat, expectedError);
+
+				const callWithNull = () => SparseMatrix._applyDefaultOptions({rowCount: null});
+				assert.throws(callWithNull, TypeError);
+				assert.throws(callWithNull, expectedError);
+
+				const callWithString = () => SparseMatrix._applyDefaultOptions({rowCount: ''});
+				assert.throws(callWithString, TypeError);
+				assert.throws(callWithString, expectedError);
+			});
+
+		});
+
+		describe('when `options.columnCount` is not a plain object', () => {
+
+			it('throws a TypeError', () => {
+				const expectedError = 'The columnCount option must be a positive integer';
+
+				const callWithNegative = () => SparseMatrix._applyDefaultOptions({columnCount: -1});
+				assert.throws(callWithNegative, TypeError);
+				assert.throws(callWithNegative, expectedError);
+
+				const callWithZero = () => SparseMatrix._applyDefaultOptions({columnCount: 0});
+				assert.throws(callWithZero, TypeError);
+				assert.throws(callWithZero, expectedError);
+
+				const callWithFloat = () => SparseMatrix._applyDefaultOptions({columnCount: 13.7});
+				assert.throws(callWithFloat, TypeError);
+				assert.throws(callWithFloat, expectedError);
+
+				const callWithNull = () => SparseMatrix._applyDefaultOptions({columnCount: null});
+				assert.throws(callWithNull, TypeError);
+				assert.throws(callWithNull, expectedError);
+
+				const callWithString = () => SparseMatrix._applyDefaultOptions({columnCount: ''});
+				assert.throws(callWithString, TypeError);
+				assert.throws(callWithString, expectedError);
+			});
+
 		});
 
 	});
