@@ -694,23 +694,23 @@ describe('lib/sparse-matrix', () => {
 
 	});
 
-	describe('SparseMatrix.defaultOptions', () => {
+	describe('SparseMatrix._defaultOptions', () => {
 
 		describe('.defaultData', () => {
 			it('is set to an empty object', () => {
-				assert.deepEqual(SparseMatrix.defaultOptions.defaultData, {});
+				assert.deepEqual(SparseMatrix._defaultOptions.defaultData, {});
 			});
 		});
 
 		describe('.rowCount', () => {
 			it('is set to `30`', () => {
-				assert.strictEqual(SparseMatrix.defaultOptions.rowCount, 30);
+				assert.strictEqual(SparseMatrix._defaultOptions.rowCount, 30);
 			});
 		});
 
 		describe('.colCount', () => {
 			it('is set to `30`', () => {
-				assert.strictEqual(SparseMatrix.defaultOptions.colCount, 30);
+				assert.strictEqual(SparseMatrix._defaultOptions.colCount, 30);
 			});
 		});
 
@@ -722,7 +722,7 @@ describe('lib/sparse-matrix', () => {
 
 		beforeEach(() => {
 			sinon.spy(Object, 'assign');
-			SparseMatrix.defaultOptions = {isDefaultOptions: true};
+			SparseMatrix._defaultOptions = {isDefaultOptions: true};
 			options = {isOptions: true};
 			returnValue = SparseMatrix._applyDefaultOptions(options);
 		});
@@ -731,8 +731,8 @@ describe('lib/sparse-matrix', () => {
 			assert.calledOnce(Object.assign);
 			assert.isObject(Object.assign.firstCall.args[0]);
 			assert.notStrictEqual(Object.assign.firstCall.args[0], options);
-			assert.notStrictEqual(Object.assign.firstCall.args[0], SparseMatrix.defaultOptions);
-			assert.strictEqual(Object.assign.firstCall.args[1], SparseMatrix.defaultOptions);
+			assert.notStrictEqual(Object.assign.firstCall.args[0], SparseMatrix._defaultOptions);
+			assert.strictEqual(Object.assign.firstCall.args[1], SparseMatrix._defaultOptions);
 			assert.strictEqual(Object.assign.firstCall.args[2], options);
 		});
 
