@@ -132,6 +132,31 @@ describe('lib/sparse-matrix', () => {
 
 			});
 
+			describe('when the instance has a `transformSetData` method', () => {
+				let transformData;
+
+				beforeEach(() => {
+					transformData = {isTransformData: true};
+					instance.transformSetData = sinon.stub().returns(transformData);
+					returnValue = instance.set(1, 2, data);
+				});
+
+				it('calls the `transformSetData` method with a copy of the cell data', () => {
+					assert.calledOnce(instance.transformSetData);
+					assert.deepEqual(instance.transformSetData.firstCall.args[0], data);
+					assert.notStrictEqual(instance.transformSetData.firstCall.args[0], data);
+				});
+
+				it('adds the `transformSetData` return value as data for the given coordinates', () => {
+					const cells = instance.toJSON();
+					assert.deepEqual(cells, [
+						{x: 1, y: 2, data: transformData}
+					]);
+					assert.notStrictEqual(cells[0].data, transformData);
+				});
+
+			});
+
 		});
 
 		describe('.get(x, y)', () => {
@@ -201,6 +226,32 @@ describe('lib/sparse-matrix', () => {
 					it('is set to a copy of the set data', () => {
 						assert.deepEqual(returnValue.data, data);
 						assert.notStrictEqual(returnValue.data, data);
+					});
+				});
+
+			});
+
+			describe('when the instance has a `transformGetData` method', () => {
+				let data;
+				let transformData;
+
+				beforeEach(() => {
+					transformData = {isTransformData: true};
+					instance.transformGetData = sinon.stub().returns(transformData);
+					data = {isSetData: true};
+					instance.set(1, 2, data);
+					returnValue = instance.get(1, 2);
+				});
+
+				it('calls the `transformGetData` method with a copy of the cell data', () => {
+					assert.calledOnce(instance.transformGetData);
+					assert.deepEqual(instance.transformGetData.firstCall.args[0], data);
+					assert.notStrictEqual(instance.transformGetData.firstCall.args[0], data);
+				});
+
+				describe('.data', () => {
+					it('is set to the `transformGetData` returned value', () => {
+						assert.strictEqual(returnValue.data, transformData);
 					});
 				});
 
