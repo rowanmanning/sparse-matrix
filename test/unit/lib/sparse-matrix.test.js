@@ -19,7 +19,8 @@ describe('lib/sparse-matrix', () => {
 			options = {
 				defaultData: {isDefaultData: true},
 				rowCount: 4,
-				columnCount: 4
+				columnCount: 4,
+				cells: []
 			};
 			instance = new SparseMatrix(options);
 		});
@@ -60,14 +61,15 @@ describe('lib/sparse-matrix', () => {
 				returnValue = instance.toJSON();
 			});
 
-			it('returns an array representing the cells', () => {
-				assert.isArray(returnValue);
-				assert.lengthEquals(returnValue, 0);
-			});
-
-			it('returns a copied array, not a reference to an internal', () => {
-				returnValue.push(1);
+			it('returns a plain object containing matrix information and a copied array representing the cells', () => {
 				assert.notStrictEqual(instance.toJSON(), returnValue);
+				assert.isObject(returnValue);
+				assert.strictEqual(returnValue.defaultData, options.defaultData);
+				assert.strictEqual(returnValue.columnCount, options.columnCount);
+				assert.strictEqual(returnValue.rowCount, options.rowCount);
+				assert.isArray(returnValue.cells);
+				assert.lengthEquals(returnValue.cells, 0);
+				assert.deepEqual(returnValue.cells, []);
 			});
 
 		});
@@ -88,7 +90,7 @@ describe('lib/sparse-matrix', () => {
 			});
 
 			it('adds the cell data for the given coordinates', () => {
-				const cells = instance.toJSON();
+				const {cells} = instance.toJSON();
 				assert.deepEqual(cells, [
 					{x: 1, y: 2, data}
 				]);
@@ -112,7 +114,7 @@ describe('lib/sparse-matrix', () => {
 				});
 
 				it('overrides the cell data for the given coordinates', () => {
-					const cells = instance.toJSON();
+					const {cells} = instance.toJSON();
 					assert.deepEqual(cells, [
 						{x: 1, y: 2, data: newData}
 					]);
@@ -151,7 +153,7 @@ describe('lib/sparse-matrix', () => {
 				});
 
 				it('removes cell data for a cell', () => {
-					assert.deepEqual(instance.toJSON(), []);
+					assert.deepEqual(instance.toJSON().cells, []);
 				});
 
 			});
@@ -172,7 +174,7 @@ describe('lib/sparse-matrix', () => {
 				});
 
 				it('adds the `transformSetData` return value as data for the given coordinates', () => {
-					const cells = instance.toJSON();
+					const {cells} = instance.toJSON();
 					assert.deepEqual(cells, [
 						{x: 1, y: 2, data: transformData}
 					]);
@@ -203,7 +205,7 @@ describe('lib/sparse-matrix', () => {
 			});
 
 			it('does not modify the instance cell data', () => {
-				assert.deepEqual(instance.toJSON(), []);
+				assert.deepEqual(instance.toJSON().cells, []);
 			});
 
 			describe('.x', () => {
@@ -338,7 +340,7 @@ describe('lib/sparse-matrix', () => {
 			});
 
 			it('removes cell data for a cell', () => {
-				assert.deepEqual(instance.toJSON(), []);
+				assert.deepEqual(instance.toJSON().cells, []);
 				assert.deepEqual(instance.get(1, 2).data, options.defaultData);
 			});
 
@@ -480,90 +482,21 @@ describe('lib/sparse-matrix', () => {
 				returnValue = instance.export();
 			});
 
-			it('returns a copied array representing the cells', () => {
-				assert.isArray(returnValue);
-				assert.lengthEquals(returnValue, 3);
-				assert.deepEqual(returnValue, [
+			it('returns a plain object containing matrix information and a copied array representing the cells', () => {
+				assert.isObject(returnValue);
+				assert.strictEqual(returnValue.defaultData, options.defaultData);
+				assert.strictEqual(returnValue.columnCount, options.columnCount);
+				assert.strictEqual(returnValue.rowCount, options.rowCount);
+				assert.isArray(returnValue.cells);
+				assert.lengthEquals(returnValue.cells, 3);
+				assert.deepEqual(returnValue.cells, [
 					{x: 1, y: 2, data: dataOneTwo},
 					{x: 3, y: 3, data: dataThreeThree},
 					{x: 0, y: 0, data: dataZeroZero}
 				]);
-				assert.notStrictEqual(returnValue[0].data, dataOneTwo);
-				assert.notStrictEqual(returnValue[1].data, dataThreeThree);
-				assert.notStrictEqual(returnValue[2].data, dataZeroZero);
-			});
-
-		});
-
-		describe('.import(cells)', () => {
-			let dataOneTwo;
-			let dataThreeThree;
-			let dataZeroZero;
-			let returnValue;
-
-			beforeEach(() => {
-				sinon.stub(instance, 'set');
-				dataOneTwo = {isOneTwo: true};
-				dataThreeThree = {isThreeThree: true};
-				dataZeroZero = {isZeroZero: true};
-				returnValue = instance.import([
-					{x: 1, y: 2, data: dataOneTwo},
-					{x: 3, y: 3, data: dataThreeThree},
-					{x: 0, y: 0, data: dataZeroZero}
-				]);
-			});
-
-			it('sets each item in the cells array', () => {
-				assert.calledThrice(instance.set);
-				assert.calledWithExactly(instance.set, 1, 2, dataOneTwo);
-				assert.calledWithExactly(instance.set, 3, 3, dataThreeThree);
-				assert.calledWithExactly(instance.set, 0, 0, dataZeroZero);
-			});
-
-			it('returns the SparseMatrix instance', () => {
-				assert.strictEqual(returnValue, instance);
-			});
-
-			describe('when `cells` is not an array', () => {
-				let caughtError;
-
-				beforeEach(() => {
-					try {
-						instance.import({
-							0: {x: 1, y: 2, data: dataOneTwo},
-							1: {x: 3, y: 3, data: dataThreeThree},
-							2: {x: 0, y: 0, data: dataZeroZero}
-						});
-					} catch (error) {
-						caughtError = error;
-					}
-				});
-
-				it('throws a TypeError', () => {
-					assert.isInstanceOf(caughtError, TypeError);
-					assert.strictEqual(caughtError.message, 'Imported cells must be an array');
-				});
-
-			});
-
-			describe('when a cell is not a plain object', () => {
-
-				it('throws a TypeError', () => {
-					const expectedError = 'Imported cells must be plain objects';
-
-					const importCellAsArray = () => instance.import([[]]);
-					assert.throws(importCellAsArray, TypeError);
-					assert.throws(importCellAsArray, expectedError);
-
-					const importCellAsString = () => instance.import(['']);
-					assert.throws(importCellAsString, TypeError);
-					assert.throws(importCellAsString, expectedError);
-
-					const importCellAsNull = () => instance.import([null]);
-					assert.throws(importCellAsNull, TypeError);
-					assert.throws(importCellAsNull, expectedError);
-				});
-
+				assert.notStrictEqual(returnValue.cells[0].data, dataOneTwo);
+				assert.notStrictEqual(returnValue.cells[1].data, dataThreeThree);
+				assert.notStrictEqual(returnValue.cells[2].data, dataZeroZero);
 			});
 
 		});
@@ -767,6 +700,28 @@ describe('lib/sparse-matrix', () => {
 
 		});
 
+		describe('when `options.cells` contains cells', () => {
+
+			beforeEach(() => {
+				sinon.stub(SparseMatrix.prototype, 'set');
+				options.cells = [
+					{x: 0, y: 1, data: {mockDataA: true}},
+					{x: 1, y: 0, data: {mockDataB: true}},
+					{x: 1, y: 1, data: {mockDataC: true}}
+				];
+				instance = new SparseMatrix(options);
+			});
+
+			it('calls `.set` with each cell', () => {
+				assert.calledThrice(instance.set);
+				assert.calledWith(instance.set);
+				assert.calledWith(instance.set, 0, 1, {mockDataA: true});
+				assert.calledWith(instance.set, 1, 0, {mockDataB: true});
+				assert.calledWith(instance.set, 1, 1, {mockDataC: true});
+			});
+
+		});
+
 	});
 
 	describe('SparseMatrix._defaultOptions', () => {
@@ -789,6 +744,12 @@ describe('lib/sparse-matrix', () => {
 			});
 		});
 
+		describe('.cells', () => {
+			it('is set to an empty array', () => {
+				assert.deepEqual(SparseMatrix._defaultOptions.cells, []);
+			});
+		});
+
 	});
 
 	describe('SparseMatrix._applyDefaultOptions(options)', () => {
@@ -801,7 +762,8 @@ describe('lib/sparse-matrix', () => {
 				isDefaultOptions: true,
 				defaultData: {isDefaultData: true},
 				columnCount: 123,
-				rowCount: 123
+				rowCount: 123,
+				cells: []
 			};
 			options = {isOptions: true};
 			returnValue = SparseMatrix._applyDefaultOptions(options);
@@ -892,6 +854,46 @@ describe('lib/sparse-matrix', () => {
 				const callWithString = () => SparseMatrix._applyDefaultOptions({columnCount: ''});
 				assert.throws(callWithString, TypeError);
 				assert.throws(callWithString, expectedError);
+			});
+
+		});
+
+		describe('when `options.cells` is not an array', () => {
+
+			it('throws a TypeError', () => {
+				const expectedError = 'The cells option must be an array';
+
+				const callWithObject = () => SparseMatrix._applyDefaultOptions({cells: {}});
+				assert.throws(callWithObject, TypeError);
+				assert.throws(callWithObject, expectedError);
+
+				const callWithString = () => SparseMatrix._applyDefaultOptions({cells: ''});
+				assert.throws(callWithString, TypeError);
+				assert.throws(callWithString, expectedError);
+
+				const callWithNull = () => SparseMatrix._applyDefaultOptions({cells: null});
+				assert.throws(callWithNull, TypeError);
+				assert.throws(callWithNull, expectedError);
+			});
+
+		});
+
+		describe('when `options.cells` contains an item which is not a plain object', () => {
+
+			it('throws a TypeError', () => {
+				const expectedError = 'Each cell in the cells option must be a plain object';
+
+				const callWithArray = () => SparseMatrix._applyDefaultOptions({cells: [[]]});
+				assert.throws(callWithArray, TypeError);
+				assert.throws(callWithArray, expectedError);
+
+				const callWithString = () => SparseMatrix._applyDefaultOptions({cells: ['']});
+				assert.throws(callWithString, TypeError);
+				assert.throws(callWithString, expectedError);
+
+				const callWithNull = () => SparseMatrix._applyDefaultOptions({cells: [null]});
+				assert.throws(callWithNull, TypeError);
+				assert.throws(callWithNull, expectedError);
 			});
 
 		});
