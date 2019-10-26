@@ -58,18 +58,28 @@ describe('lib/sparse-matrix', () => {
 			let returnValue;
 
 			beforeEach(() => {
+				sinon.stub(instance, 'export').returns('mock export');
 				returnValue = instance.toJSON();
 			});
 
-			it('returns a plain object containing matrix information and a copied array representing the cells', () => {
-				assert.notStrictEqual(instance.toJSON(), returnValue);
-				assert.isObject(returnValue);
-				assert.strictEqual(returnValue.defaultData, options.defaultData);
-				assert.strictEqual(returnValue.columnCount, options.columnCount);
-				assert.strictEqual(returnValue.rowCount, options.rowCount);
-				assert.isArray(returnValue.cells);
-				assert.lengthEquals(returnValue.cells, 0);
-				assert.deepEqual(returnValue.cells, []);
+			it('returns the result of calling `export`', () => {
+				assert.calledOnce(instance.export);
+				assert.strictEqual(returnValue, instance.export.firstCall.returnValue);
+			});
+
+		});
+
+		describe('[Symbol.for(\'nodejs.util.inspect.custom\')]()', () => {
+			let returnValue;
+
+			beforeEach(() => {
+				sinon.stub(instance, 'export').returns('mock export');
+				returnValue = instance[Symbol.for('nodejs.util.inspect.custom')]();
+			});
+
+			it('returns the result of calling `export`', () => {
+				assert.calledOnce(instance.export);
+				assert.strictEqual(returnValue, instance.export.firstCall.returnValue);
 			});
 
 		});
