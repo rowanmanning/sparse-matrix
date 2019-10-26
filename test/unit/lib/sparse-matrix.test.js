@@ -168,27 +168,72 @@ describe('lib/sparse-matrix', () => {
 
 			});
 
-			describe('when the instance has a `transformSetData` method', () => {
-				let transformData;
+			describe('when the instance has a "set" event handler', () => {
+				let eventHandler;
 
 				beforeEach(() => {
-					transformData = {isTransformData: true};
-					instance.transformSetData = sinon.stub().returns(transformData);
+					eventHandler = sinon.stub().callsFake(cell => {
+						cell.x = 137;
+						cell.data.isFromSetHandler = true;
+					});
+					instance.on('set', eventHandler);
 					returnValue = instance.set(1, 2, data);
 				});
 
-				it('calls the `transformSetData` method with a copy of the cell data', () => {
-					assert.calledOnce(instance.transformSetData);
-					assert.deepEqual(instance.transformSetData.firstCall.args[0], data);
-					assert.notStrictEqual(instance.transformSetData.firstCall.args[0], data);
+				it('calls the handler with the updated cell', () => {
+					assert.calledOnce(eventHandler);
+					assert.isObject(eventHandler.firstCall.args[0]);
+					assert.isNumber(eventHandler.firstCall.args[0].x);
+					assert.isNumber(eventHandler.firstCall.args[0].y);
+					assert.deepEqual(eventHandler.firstCall.args[0].data, {
+						isSetData: true,
+						isFromSetHandler: true
+					});
 				});
 
-				it('adds the `transformSetData` return value as data for the given coordinates', () => {
+				it('keeps data changes made in the event handler but not coordinate changes', () => {
 					const {cells} = instance.toJSON();
 					assert.deepEqual(cells, [
-						{x: 1, y: 2, data: transformData}
+						{x: 1, y: 2, data: {
+							isSetData: true,
+							isFromSetHandler: true
+						}}
 					]);
-					assert.notStrictEqual(cells[0].data, transformData);
+				});
+
+			});
+
+			describe('when the instance has an "update" event handler', () => {
+				let eventHandler;
+
+				beforeEach(() => {
+					eventHandler = sinon.stub().callsFake(cell => {
+						cell.x = 137;
+						cell.data.isFromUpdateHandler = true;
+					});
+					instance.on('update', eventHandler);
+					returnValue = instance.set(1, 2, data);
+				});
+
+				it('calls the handler with the updated cell', () => {
+					assert.calledOnce(eventHandler);
+					assert.isObject(eventHandler.firstCall.args[0]);
+					assert.isNumber(eventHandler.firstCall.args[0].x);
+					assert.isNumber(eventHandler.firstCall.args[0].y);
+					assert.deepEqual(eventHandler.firstCall.args[0].data, {
+						isSetData: true,
+						isFromUpdateHandler: true
+					});
+				});
+
+				it('keeps data changes made in the event handler but not coordinate changes', () => {
+					const {cells} = instance.toJSON();
+					assert.deepEqual(cells, [
+						{x: 1, y: 2, data: {
+							isSetData: true,
+							isFromUpdateHandler: true
+						}}
+					]);
 				});
 
 			});
@@ -267,28 +312,34 @@ describe('lib/sparse-matrix', () => {
 
 			});
 
-			describe('when the instance has a `transformGetData` method', () => {
-				let data;
-				let transformData;
+			describe('when the instance has a "get" event handler', () => {
+				let eventHandler;
 
 				beforeEach(() => {
-					transformData = {isTransformData: true};
-					instance.transformGetData = sinon.stub().returns(transformData);
-					data = {isSetData: true};
-					instance.set(1, 2, data);
+					eventHandler = sinon.stub().callsFake(cell => {
+						cell.x = 137;
+						cell.data.isFromGetHandler = true;
+					});
+					instance.on('get', eventHandler);
 					returnValue = instance.get(1, 2);
 				});
 
-				it('calls the `transformGetData` method with a copy of the cell data', () => {
-					assert.calledOnce(instance.transformGetData);
-					assert.deepEqual(instance.transformGetData.firstCall.args[0], data);
-					assert.notStrictEqual(instance.transformGetData.firstCall.args[0], data);
+				it('calls the handler with the cell being requested', () => {
+					assert.calledOnce(eventHandler);
+					assert.isObject(eventHandler.firstCall.args[0]);
+					assert.isNumber(eventHandler.firstCall.args[0].x);
+					assert.isNumber(eventHandler.firstCall.args[0].y);
+					assert.deepEqual(eventHandler.firstCall.args[0].data, {
+						isDefaultData: true,
+						isFromGetHandler: true
+					});
 				});
 
-				describe('.data', () => {
-					it('is set to the `transformGetData` returned value', () => {
-						assert.strictEqual(returnValue.data, transformData);
-					});
+				it('keeps data changes made in the event handler but not coordinate changes', () => {
+					assert.deepEqual(returnValue, {x: 1, y: 2, data: {
+						isDefaultData: true,
+						isFromGetHandler: true
+					}});
 				});
 
 			});
@@ -362,6 +413,38 @@ describe('lib/sparse-matrix', () => {
 
 				it('returns the SparseMatrix instance', () => {
 					assert.strictEqual(returnValue, instance);
+				});
+
+			});
+
+			describe('when the instance has an "delete" event handler', () => {
+				let eventHandler;
+
+				beforeEach(() => {
+					eventHandler = sinon.stub();
+					instance.on('delete', eventHandler);
+					returnValue = instance.delete(1, 2, data);
+				});
+
+				it('calls the handler with the deleted cell\'s coordinates', () => {
+					assert.calledOnce(eventHandler);
+					assert.calledWith(eventHandler, {x: 1, y: 2, data: undefined});
+				});
+
+			});
+
+			describe('when the instance has a "update" event handler', () => {
+				let eventHandler;
+
+				beforeEach(() => {
+					eventHandler = sinon.stub();
+					instance.on('update', eventHandler);
+					returnValue = instance.delete(1, 2, data);
+				});
+
+				it('calls the handler with the deleted cell\'s coordinates', () => {
+					assert.calledOnce(eventHandler);
+					assert.calledWith(eventHandler, {x: 1, y: 2, data: undefined});
 				});
 
 			});
