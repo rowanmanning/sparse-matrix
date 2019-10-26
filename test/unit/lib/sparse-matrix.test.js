@@ -812,7 +812,7 @@ describe('lib/sparse-matrix', () => {
 
 		});
 
-		describe('when `options.rowCount` is not a plain object', () => {
+		describe('when `options.rowCount` is not a positive integer', () => {
 
 			it('throws a TypeError', () => {
 				const expectedError = 'The rowCount option must be a positive integer';
@@ -840,7 +840,7 @@ describe('lib/sparse-matrix', () => {
 
 		});
 
-		describe('when `options.columnCount` is not a plain object', () => {
+		describe('when `options.columnCount` is not a positive integer', () => {
 
 			it('throws a TypeError', () => {
 				const expectedError = 'The columnCount option must be a positive integer';
