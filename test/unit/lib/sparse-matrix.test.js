@@ -30,6 +30,12 @@ describe('lib/sparse-matrix', () => {
 			assert.calledWithExactly(SparseMatrix._applyDefaultOptions, options);
 		});
 
+		describe('.defaultData', () => {
+			it('is set to `options.defaultData`', () => {
+				assert.strictEqual(instance.defaultData, options.defaultData);
+			});
+		});
+
 		describe('.columnCount', () => {
 			it('is set to `options.columnCount`', () => {
 				assert.strictEqual(instance.columnCount, options.columnCount);
