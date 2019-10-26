@@ -207,6 +207,23 @@ describe('lib/sparse-matrix', () => {
 					]);
 				});
 
+				describe('when the handler deletes the cell data', () => {
+
+					beforeEach(() => {
+						eventHandler = sinon.stub().callsFake(cell => {
+							delete cell.data;
+						});
+						instance.off('set');
+						instance.on('set', eventHandler);
+						returnValue = instance.set(1, 2, data);
+					});
+
+					it('removes cell data for a cell', () => {
+						assert.deepEqual(instance.toJSON().cells, []);
+					});
+
+				});
+
 			});
 
 			describe('when the instance has an "update" event handler', () => {
@@ -240,6 +257,23 @@ describe('lib/sparse-matrix', () => {
 							isFromUpdateHandler: true
 						}}
 					]);
+				});
+
+				describe('when the handler deletes the cell data', () => {
+
+					beforeEach(() => {
+						eventHandler = sinon.stub().callsFake(cell => {
+							delete cell.data;
+						});
+						instance.off('update');
+						instance.on('update', eventHandler);
+						returnValue = instance.set(1, 2, data);
+					});
+
+					it('removes cell data for a cell', () => {
+						assert.deepEqual(instance.toJSON().cells, []);
+					});
+
 				});
 
 			});

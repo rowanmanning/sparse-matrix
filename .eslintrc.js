@@ -17,6 +17,12 @@ module.exports = {
 			}
 		],
 		'no-underscore-dangle': 'off',
-		'object-property-newline': 'off'
+		'object-property-newline': 'off',
+		'max-statements': [
+			'warn',
+			{
+				max: 20
+			}
+		]
 	}
 };
