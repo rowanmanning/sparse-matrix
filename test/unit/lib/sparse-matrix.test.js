@@ -821,6 +821,28 @@ describe('lib/sparse-matrix', () => {
 
 		});
 
+		describe('when the instance has a `bindEventHandlers` method', () => {
+			let cellCount;
+
+			beforeEach(() => {
+				SparseMatrix.prototype.bindEventHandlers = function() {
+					cellCount = this.export().cells.length;
+				};
+				sinon.spy(SparseMatrix.prototype, 'bindEventHandlers');
+				options.cells = [
+					{x: 0, y: 1, data: {isMockData: true}}
+				];
+				instance = new SparseMatrix(options);
+			});
+
+			it('calls `bindEventHandlers` before setting any cell data', () => {
+				assert.calledOnce(instance.bindEventHandlers);
+				assert.strictEqual(cellCount, 0);
+				assert.strictEqual(instance.export().cells.length, 1);
+			});
+
+		});
+
 	});
 
 	describe('SparseMatrix._defaultOptions', () => {
